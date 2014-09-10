@@ -1,4 +1,4 @@
-me_and_my_buds
+Me and My Buds
 ==============
 
 A grow simulator.
