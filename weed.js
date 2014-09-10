@@ -1,55 +1,99 @@
 HIGH_CHART = ["You are sober as hell.", "You are barely feelin' it.", "You are a little toasty.", "You are half-baked.", "You are kinda blazed.", "You are stupid geeked.", "You have no idea what's goin' on.", "You need to be reminded that no one has ever died from a overdose of weed."]
 
-function WeedPlant( age_in_weeks, height_in_inches, buds, harvested_buds, highness_level, cash ) {
+timeSinceLastSmoke = 0
+
+function WeedPlant( ageInWeeks, heightInInches, buds, budsInStash, highnessDigit, cash, watered ) {
+
   var that = this
 
-  this.age_in_weeks = age_in_weeks;
-  this.height_in_inches = height_in_inches;
+  this.ageInWeeks = ageInWeeks;
+  this.heightInInches = heightInInches;
   this.buds = buds;
 
-  this.harvested_buds = harvested_buds;
-  this.highness_level = highness_level;
+  this.budsInStash = budsInStash;
+  this.highnessDigit = highnessDigit;
   this.cash = cash;
 
 
+
   this.grow = function() {
-    that.age_in_weeks += 1;
-    that.height_in_inches += 3;
-    that.buds +=1;
-    console.log(that);
+    that.ageInWeeks += 1;
+    that.heightInInches += .5;
+    that.addBuds();
+    that.trackTimeSinceLastSmoke();
     that.UpdateDisplay();
   }
 
+  this.addBuds = function(){
+    if (that.ageInWeeks >= 6) {
+      that.buds +=1;
+    }
+  }
+
+  this.trackTimeSinceLastSmoke = function(){
+    timeSinceLastSmoke += 1;
+    if (timeSinceLastSmoke == 20 && that.highnessDigit >= 1 ){
+
+      that.highnessLevel = HIGH_CHART[that.highnessDigit -1];
+      timeSinceLastSmoke = 0;
+    }
+  }
+
+  this.water = function(){
+    that.watered = true;
+  }
+
   this.harvest = function(){
-    that.harvested_buds += that.buds;
+    that.budsInStash += that.buds;
     that.buds = 0;
   }
 
   this.smoke = function(){
-    that.highness_level = HIGH_CHART[Math.round(that.harvested_buds / 10)];
-    that.harvested_buds = 0;
+    timeSinceLastSmoke = 0;
+    that.highnessDigit += Math.round(that.budsInStash / 10)
+    that.speedUpTime();
+    that.increaseHighnessLevel();
+    that.budsInStash = 0;
+  }
+
+  this.speedUpTime = function(){
+    if (growInterval >= budsInStash * 10) {
+      growInterval -= budsInStash * 10
+    }
+    console.log(that.highnessDigit)
+    console.log(growInterval)
+  }
+
+  this.increaseHighnessLevel = function(){
+    if(that.highnessDigit < HIGH_CHART.length){
+      that.highnessLevel = HIGH_CHART[that.highnessDigit];
+    }
+    else {that.highnessLevel = HIGH_CHART[HIGH_CHART.length - 1]
+    };
+    console.log(that.highnessLevel)
   }
 
   this.sell = function(){
-    that.cash += that.harvested_buds * 5
-    that.harvested_buds = 0;
+    that.cash += that.budsInStash * 5
+    that.budsInStash = 0;
   }
 
   this.UpdateDisplay = function(){
-    $('#age-display').html(this.age_in_weeks)
-    $('#height-display').html(this.height_in_inches)
+    $('#age-display').html(this.ageInWeeks)
+    $('#height-display').html(this.heightInInches)
     $('#buds-on-plant-display').html(this.buds)
-    $('#harvested-buds-display').html(this.harvested_buds)
-    $('#higness-display').html(this.highness_level)
+    $('#harvested-buds-display').html(this.budsInStash)
+    $('#higness-display').html(this.highnessLevel)
     $('#cash-display').html('$' + this.cash)
+    console.log(timeSinceLastSmoke)
   }
 }
 
 
 $( document ).ready(function() {
-  var George = new WeedPlant( 0, 0, 0, 0, 0, 0 );
-
-  setInterval(George.grow, 60000);
+  var George = new WeedPlant( 0, 0, 0, 0, 0, 0, true );
+  growInterval = 1000;
+  setInterval(George.grow, growInterval);
 
   $( "#harvest-button" ).click(function(){
     George.harvest();
@@ -59,5 +103,8 @@ $( document ).ready(function() {
   })
   $( "#sell-button" ).click(function(){
     George.sell();
+  })
+  $( "#water-button" ).click(function(){
+    George.water();
   })
 });
