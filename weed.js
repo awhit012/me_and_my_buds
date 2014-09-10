@@ -34,8 +34,9 @@ function WeedPlant( ageInWeeks, heightInInches, buds, budsInStash, highnessDigit
     timeSinceLastSmoke += 1;
     if (timeSinceLastSmoke == 20 && that.highnessDigit >= 1 ){
 
-      that.highnessLevel = HIGH_CHART[that.highnessDigit -1];
+      that.highnessDigit -= 1;
       timeSinceLastSmoke = 0;
+      that.updateHighnessLevel();
     }
   }
 
@@ -66,7 +67,7 @@ function WeedPlant( ageInWeeks, heightInInches, buds, budsInStash, highnessDigit
 
   this.increaseHighnessLevel = function(){
     if(that.highnessDigit < HIGH_CHART.length){
-      that.highnessLevel = HIGH_CHART[that.highnessDigit];
+      that.updateHighnessLevel();
     }
     else {that.highnessLevel = HIGH_CHART[HIGH_CHART.length - 1]
     };
@@ -76,6 +77,10 @@ function WeedPlant( ageInWeeks, heightInInches, buds, budsInStash, highnessDigit
   this.sell = function(){
     that.cash += that.budsInStash * 5
     that.budsInStash = 0;
+  }
+
+  this.updateHighnessLevel = function(){
+    that.highnessLevel = HIGH_CHART[that.highnessDigit];
   }
 
   this.UpdateDisplay = function(){
